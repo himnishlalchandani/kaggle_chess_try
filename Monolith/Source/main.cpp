@@ -52,7 +52,7 @@ int main()
 	filesystem::init_path();
 	eval::mirror_tables();
 	search::init_tables();
-	syzygy::init_tb(uci::syzygy.path);
+
 
 	uci::loop();
 	return 0;
