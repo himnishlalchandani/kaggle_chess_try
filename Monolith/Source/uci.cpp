@@ -493,7 +493,6 @@ void uci::loop()
 	thread_pool threads(thread_cnt, pos);
 	threads.start_all();
 	ucinewgame(pos, threads);
-	bk.open(bk.std_name);
 
 	do // communication loop
 	{
