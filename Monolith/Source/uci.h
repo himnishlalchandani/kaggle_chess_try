@@ -21,7 +21,7 @@
 
 #include "move.h"
 #include "thread.h"
-#include "polyglot.h"
+
 #include "trans.h"
 #include "types.h"
 #include "main.h"
