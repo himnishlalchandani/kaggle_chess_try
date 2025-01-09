@@ -345,10 +345,7 @@ namespace uci
 		{
 			use_book = bk.hit = boolean(value);
 		}
-		else if (name == "Book File")
-		{
-			bk.open(value);
-		}
+		
 		else if (name == "Log")
 		{
 			static synclog sync;
