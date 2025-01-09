@@ -43,8 +43,6 @@ namespace uci
 	extern bool stop;
 	extern bool ponder;
 	extern bool infinite;
-	extern bool use_book;
-	extern book bk;
 
 	extern int thread_cnt;
 	extern int mv_cnt;
