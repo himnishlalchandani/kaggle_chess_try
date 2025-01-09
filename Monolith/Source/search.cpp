@@ -454,16 +454,7 @@ namespace search
 			{
 				thread.chrono.hits = thread.chrono.hit_threshold;
 				int success{};
-				if (int wdl{ syzygy::probe_wdl(pos, success) }; success)
-				{
-					thread.cnt_tbhit += 1;
-					auto  tb{ sc::tb::wdl(wdl, stack->dt) };
-					score sc{ std::get<0>(tb) };
-					bound bd{ std::get<1>(tb) };
-
-					trans::store(key, move{}, sc, bd, lim::dt - 1, stack->dt);
-					return sc;
-				}
+				
 			}
 		}
 
@@ -897,20 +888,7 @@ namespace search
 
 		// probing syzygy tablebases
 		
-		if (thread.use_syzygy = syzygy::tb_cnt > 0; thread.use_syzygy && bit::popcnt(pos.side[both]) <= uci::syzygy.pieces)
-		{
-			if (pick.tb_pos = syzygy::probe_dtz_root(pos, pick, uci::game_hash); pick.tb_pos)
-				thread.use_syzygy = false;
-			else
-			{
-				// using WDL-tables as a fall-back if DTZ-tables are missing
-				// allowing probing during the search only if the position is winning
-
-				if (pick.tb_pos = syzygy::probe_wdl_root(pos, pick); pick.tb_pos && !pick.tb_win())
-					thread.use_syzygy = false;
-			}
-		}
-		thread.cnt_tbhit += pick.tb_pos;
+		
 
 		// iterative deepening & looping through multi-principal variations
 
