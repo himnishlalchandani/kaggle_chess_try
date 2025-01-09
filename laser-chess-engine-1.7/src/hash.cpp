@@ -78,11 +78,11 @@ uint64_t Hash::getSize() const {
 
 void Hash::setSize(uint64_t MB) {
     free(table);
-    init(1);
+    init(MB);
 }
 
 void Hash::init(uint64_t MB) {
-    uint64_t newMB = 1;
+    uint64_t newMB = MB;
     // Convert to bytes
     uint64_t bytes = newMB << 20;
     // Calculate how many array slots we can use
