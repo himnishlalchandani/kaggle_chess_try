@@ -356,11 +356,6 @@ namespace uci
 			if (log) sync.start();
 			else     sync.stop();
 		}
-		else if (name == "SyzygyPath")
-		{
-			syzygy.path = value;
-			syzygy::init_tb(syzygy.path);
-		}
 		else if (name == "SyzygyProbeDepth")
 		{
 			syzygy.dt = std::min(std::max(std::stoi(value), 1), lim::dt);
