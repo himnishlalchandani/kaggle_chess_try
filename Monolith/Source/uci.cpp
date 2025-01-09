@@ -44,8 +44,6 @@ bool uci::use_abdada{ false };
 bool uci::ponder{ false };
 bool uci::chess960{ false };
 bool uci::log{ false };
-bool uci::use_book{ true };
-
 // values depending on the 'go' command
 
 bool uci::infinite{ false };
@@ -54,7 +52,6 @@ uci::search_limit uci::limit{};
 // values depending on various other things
 
 bool uci::stop{ true };
-book uci::bk{};
 
 int uci::mv_cnt{};
 int uci::mv_offset{};
@@ -271,8 +268,6 @@ namespace uci
 			<< "\noption name Move Overhead type spin default " << overhead << " min 0 max " << lim::overhead
 			<< "\noption name Log type check default " << boolean(log)
 
-			<< "\noption name OwnBook type check default " << boolean(use_book)
-			<< "\noption name Book File type string default " << bk.std_name
 
 			<< "\noption name SyzygyPath type string default " << syzygy.path
 			<< "\noption name SyzygyProbeDepth type spin default " << syzygy.dt << " min 1 max " << lim::dt
@@ -285,7 +280,6 @@ namespace uci
 		// responding to the 'ucinewgame' command
 		// setting up a new game
 
-		bk.hit = use_book;
 		hash_table.clear();
 		threads.clear_history();
 		set_position(pos, startpos);
@@ -341,10 +335,6 @@ namespace uci
 		{
 			multipv = std::min(std::size_t(std::max(std::stoi(value), 1)), lim::multipv);
 		}
-		else if (name == "OwnBook")
-		{
-			use_book = bk.hit = boolean(value);
-		}
 		
 		else if (name == "Log")
 		{
@@ -394,20 +384,8 @@ namespace uci
 	void search(thread_pool& threads, board& pos, timemanage::move_time movetime)
 	{
 		stop = false;
-		if (move bestmove{ bk.get_move(pos) }; bestmove)
-		{
-			// retrieving a book move
-
-			std::cout << "info string book hit" << std::endl << "bestmove " << bestmove.algebraic() << std::endl;
-			stop = true;
-		}
-		else
-		{
 			// starting the search if there is no book move
-
-			bk.hit = false;
 			threads.thread[0]->std_thread = std::thread{ search::start, std::ref(threads), movetime };
-		}
 	}
 
 	void searchmoves(std::istringstream& input, const board& pos)
