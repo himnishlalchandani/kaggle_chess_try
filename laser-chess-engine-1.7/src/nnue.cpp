@@ -78,7 +78,7 @@ namespace NNUE {
         
         // Update accumulator based on current board position
         for (int square = 0; square < 64; square++) {
-            int piece = board.getPiece(square);
+            int piece = board.getPieces(square);
             if (piece != EMPTY) {
                 update_accumulator(piece, square, true);
             }
