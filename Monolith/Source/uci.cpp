@@ -192,7 +192,6 @@ namespace debug
 		input >> filename;
 		input >> movetime;
 		reset_game();
-		bench::search(filename, movetime);
 	}
 
 	void perft(std::istringstream& input, board& pos)
@@ -204,10 +203,6 @@ namespace debug
 		input >> dt;
 		input >> mode;
 
-		if (mode == "pseudo")
-			bench::perft<mode::pseudolegal>(pos, dt);
-		else
-			bench::perft<mode::legal>(pos, dt);
 	}
 
 	void eval(const board& pos)
