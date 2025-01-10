@@ -22,7 +22,7 @@
 #include <cstring>
 #include "board.h"
 #include "common.h"
-#include "nnue.h"
+//#include "nnue.h"
 
 class Board;
 
@@ -31,7 +31,7 @@ void initDistances();
 void setMaterialScale(int s);
 void setKingSafetyScale(int s);
 
-void initNNUE();
+//void initNNUE();
 
 struct EvalInfo {
     uint64_t attackMaps[2][5];
