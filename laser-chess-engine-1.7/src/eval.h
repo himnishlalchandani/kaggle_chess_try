@@ -31,12 +31,16 @@ void initDistances();
 void setMaterialScale(int s);
 void setKingSafetyScale(int s);
 
+void initNNUE();
+
 struct EvalInfo {
     uint64_t attackMaps[2][5];
     uint64_t fullAttackMaps[2];
     uint64_t doubleAttackMaps[2];
     uint64_t rammedPawns[2];
     uint64_t openFiles;
+
+    NNUE::Network nnue;
 
     void clear() {
         std::memset(this, 0, sizeof(EvalInfo));
@@ -46,6 +50,10 @@ struct EvalInfo {
 class Eval {
 public:
     template <bool debug = false> int evaluate(Board &b);
+
+    int evaluateNNUE(Board &b) {
+        return ei.nnue.evaluate(b);
+    }
 
 private:
     EvalInfo ei;
