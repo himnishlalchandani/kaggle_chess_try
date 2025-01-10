@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     initInBetweenTable();
     initPerThreadMemory();
     initReductionTable();
-    initNNUE();
+   // initNNUE();
     setMultiPV(DEFAULT_MULTI_PV);
     setNumThreads(DEFAULT_THREADS);
 
