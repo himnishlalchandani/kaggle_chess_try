@@ -22,7 +22,7 @@
 #include <cstring>
 #include "board.h"
 #include "common.h"
-//#include "nnue.h"
+#include "nnue.h"
 
 class Board;
 
@@ -31,7 +31,7 @@ void initDistances();
 void setMaterialScale(int s);
 void setKingSafetyScale(int s);
 
-//void initNNUE();
+void initNNUE();
 
 struct EvalInfo {
     uint64_t attackMaps[2][5];
@@ -40,7 +40,7 @@ struct EvalInfo {
     uint64_t rammedPawns[2];
     uint64_t openFiles;
 
-    NNUE::Network nnue;
+    //NNUE::Network nnue;
 
     void clear() {
         std::memset(this, 0, sizeof(EvalInfo));
