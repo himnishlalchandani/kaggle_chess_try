@@ -25,7 +25,7 @@
 #include "common.h"
 #include "eval.h"
 #include "uci.h"
-#include "nnue.h"
+//#include "nnue.h"
 
 namespace {
 
@@ -201,13 +201,13 @@ void setKingSafetyScale(int s) {
 template <bool debug>
 int Eval::evaluate(Board &b) {
 
-    static bool initialized = false;
-    if (!initialized) {
-        network = NNUE::Network();
-        initialized = true;
-    }
+    // static bool initialized = false;
+    // if (!initialized) {
+    //     network = NNUE::Network();
+    //     initialized = true;
+    // }
 
-    return network.evaluate(b);
+    // return network.evaluate(b);
     
     int material[2][2] = {{0, 0}, {0, 0}};
     int egFactorMaterial = 0;
