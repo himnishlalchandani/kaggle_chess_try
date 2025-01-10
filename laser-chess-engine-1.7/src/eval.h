@@ -22,6 +22,7 @@
 #include <cstring>
 #include "board.h"
 #include "common.h"
+#include "nnue.h"
 
 class Board;
 
