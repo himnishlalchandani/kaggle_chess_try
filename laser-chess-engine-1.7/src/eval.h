@@ -51,9 +51,9 @@ class Eval {
 public:
     template <bool debug = false> int evaluate(Board &b);
 
-    int evaluateNNUE(Board &b) {
-        return ei.nnue.evaluate(b);
-    }
+    // int evaluateNNUE(Board &b) {
+    //     return ei.nnue.evaluate(b);
+    // }
 
 private:
     EvalInfo ei;
