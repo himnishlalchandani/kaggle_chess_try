@@ -33,3 +33,6 @@ namespace NNUE {
         Accumulator accumulator;
     };
 }
+
+extern NNUE::Network network;
+#endif // NNUE_H
