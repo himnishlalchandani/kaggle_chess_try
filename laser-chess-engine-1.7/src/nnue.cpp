@@ -1,6 +1,6 @@
 #include "nnue.h"
 #include <algorithm>
-#include <cmath>
+#include <cstdint>
 
 namespace NNUE {
     // Weight tables - designed to capture basic chess principles
@@ -30,7 +30,7 @@ namespace NNUE {
         0,  0,  0,  0,  0,  0,  0,  0
     };
 
-    // These weights are derived from piece values and position weights
+    // Neural network weights
     static int16_t input_weights[INPUT_SIZE][HIDDEN_SIZE];
     static int16_t output_weights[HIDDEN_SIZE];
 
@@ -78,9 +78,15 @@ namespace NNUE {
         
         // Update accumulator based on current board position
         for (int square = 0; square < 64; square++) {
-            int piece = board.getPieces(square);
-            if (piece != EMPTY) {
-                update_accumulator(piece, square, true);
+            // Check each color and piece type combination
+            for (int color = 0; color < 2; color++) {
+                for (int piece_type = 0; piece_type < 6; piece_type++) {
+                    // Use bitboard to check if piece exists on square
+                    if (board.getPieces(color, piece_type) & (1ULL << square)) {
+                        int piece = color * 6 + piece_type;
+                        update_accumulator(piece, square, true);
+                    }
+                }
             }
         }
     }
@@ -91,9 +97,11 @@ namespace NNUE {
         int feature_index = piece * 64 + square;
         int16_t multiplier = add ? 1 : -1;
         
+        // Update hidden layer values
         for (int i = 0; i < HIDDEN_SIZE; i++) {
-            accumulator.values[i] = clamp(accumulator.values[i] + 
-                input_weights[feature_index][i] * multiplier);
+            int32_t current = accumulator.values[i];
+            int32_t delta = input_weights[feature_index][i] * multiplier;
+            accumulator.values[i] = clamp(current + delta);
         }
     }
 
@@ -101,7 +109,7 @@ namespace NNUE {
         // Ensure accumulator is up to date
         refresh(board);
         
-        // Calculate final output
+        // Calculate final output using the hidden layer values
         int32_t sum = 0;
         for (int i = 0; i < HIDDEN_SIZE; i++) {
             sum += accumulator.values[i] * output_weights[i];
