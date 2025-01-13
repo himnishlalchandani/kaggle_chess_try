@@ -1,24 +1,23 @@
+/*
+    Laser, a UCI chess engine written in C++11.
+    Copyright 2015-2018 Jeffrey An and Michael An
+    Laser is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Laser is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with Laser.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include <cstring>
 #include "hash.h"
 
-// Structure packing to minimize memory waste
-#pragma pack(push, 1)
-struct HashEntry {
-    uint64_t zobristKey;  // 8 bytes
-    Move move;           // Assuming Move is 4 bytes (32 bits)
-    int16_t score;      // 2 bytes (reduced from int)
-    int16_t eval;       // 2 bytes (reduced from int)
-    uint8_t depth;      // 1 byte (reduced from int)
-    uint8_t ageNodeType;// 1 byte (age and node type combined)
-};
-
-struct HashNode {
-    HashEntry slot1;
-    HashEntry slot2;
-};
-#pragma pack(pop)
-
 Hash::Hash(uint64_t MB) {
-    init(MB);
+    init(MB);  // Changed to use the passed MB value instead of hardcoded 1
 }
 
 Hash::~Hash() {
@@ -29,61 +28,96 @@ void Hash::init(uint64_t MB) {
     // Convert to bytes (5MB = 5,242,880 bytes)
     uint64_t bytes = MB << 20;
     
-    // Calculate maximum number of HashNode entries
-    // Each HashNode contains 2 HashEntry structures
-    // Size of each HashEntry = 18 bytes
-    // Size of HashNode = 36 bytes (2 * 18)
+    // Calculate how many array slots we can use
+    // Each HashNode is 32 bytes (2 * 16 bytes for each HashEntry)
     uint64_t maxSize = bytes / sizeof(HashNode);
     
-    // Find the largest power of 2 that fits
+    // Find largest power of 2 that fits
     size = 1;
     while (size <= maxSize)
         size <<= 1;
     size >>= 1;
     
-    // Allocate the table
-    table = (HashNode*)aligned_alloc(64, size * sizeof(HashNode));
+    // Allocate aligned memory for better cache performance
+    #ifdef _MSC_VER
+        table = (HashNode*)_aligned_malloc(size * sizeof(HashNode), 64);
+    #else
+        table = (HashNode*)aligned_alloc(64, size * sizeof(HashNode));
+    #endif
+    
     clear();
 }
 
 void Hash::add(Board &b, int score, Move move, int eval, int depth, uint8_t nodeType) {
     uint64_t h = b.getZobristKey();
     uint64_t index = h & (size-1);
-    HashNode *node = table + index;
-    
-    // Clamp values to fit in smaller data types
-    int16_t clampedScore = std::clamp(score, INT16_MIN, INT16_MAX);
-    int16_t clampedEval = std::clamp(eval, INT16_MIN, INT16_MAX);
-    uint8_t clampedDepth = std::min(depth, 255);
+    HashNode* node = table + index;
 
-    if (node->slot1.zobristKey == b.getZobristKey()) {
-        setEntry(&node->slot1, b, clampedScore, move, clampedEval, clampedDepth, nodeType);
+    // A more recent update to the same position should always be chosen
+    if (node->slot1.zobristKey == h) {
+        node->slot1.setEntry(b, score, move, eval, depth, nodeType, age);
+        return;
     }
-    else if (node->slot2.zobristKey == b.getZobristKey()) {
-        setEntry(&node->slot2, b, clampedScore, move, clampedEval, clampedDepth, nodeType);
+    if (node->slot2.zobristKey == h) {
+        node->slot2.setEntry(b, score, move, eval, depth, nodeType, age);
+        return;
     }
-    else {
-        // Replacement strategy based on age and depth
-        HashEntry *toReplace = &node->slot1;
-        uint8_t age1 = node->slot1.ageNodeType >> 2;
-        uint8_t age2 = node->slot2.ageNodeType >> 2;
-        
-        if ((age - age1) < (age - age2) || 
-            ((age - age1) == (age - age2) && node->slot1.depth < node->slot2.depth)) {
-            toReplace = &node->slot2;
-        }
-        
-        setEntry(toReplace, b, clampedScore, move, clampedEval, clampedDepth, nodeType);
-    }
+
+    // Replacement strategy
+    HashEntry* toReplace = &node->slot1;
+    int score1 = 16 * ((int)((uint8_t)(age - (node->slot1.ageNodeType >> 2))))
+                 + depth - node->slot1.depth;
+    int score2 = 16 * ((int)((uint8_t)(age - (node->slot2.ageNodeType >> 2))))
+                 + depth - node->slot2.depth;
+
+    if (score1 < score2)
+        toReplace = &node->slot2;
+
+    // The node must be from a newer search space or a sufficiently high depth
+    if (score1 >= -2 || score2 >= -2)
+        toReplace->setEntry(b, score, move, eval, depth, nodeType, age);
 }
 
-private:
-void Hash::setEntry(HashEntry* entry, Board &b, int16_t score, Move move, 
-                   int16_t eval, uint8_t depth, uint8_t nodeType) {
-    entry->zobristKey = b.getZobristKey();
-    entry->move = move;
-    entry->score = score;
-    entry->eval = eval;
-    entry->depth = depth;
-    entry->ageNodeType = (age << 2) | (nodeType & 0x3);
+HashEntry* Hash::get(Board &b) {
+    uint64_t h = b.getZobristKey();
+    uint64_t index = h & (size-1);
+    HashNode* node = table + index;
+
+    if (node->slot1.zobristKey == h)
+        return &node->slot1;
+    if (node->slot2.zobristKey == h)
+        return &node->slot2;
+    return nullptr;
+}
+
+uint64_t Hash::getSize() const {
+    return (2 * size);  // Return total number of entries (2 per node)
+}
+
+void Hash::setSize(uint64_t MB) {
+    #ifdef _MSC_VER
+        _aligned_free(table);
+    #else
+        free(table);
+    #endif
+    init(MB);
+}
+
+void Hash::incrementAge() {
+    age++;
+}
+
+void Hash::clear() {
+    std::memset(table, 0, size * sizeof(HashNode));
+    age = 0;
+}
+
+int Hash::estimateHashfull() const {
+    int used = 0;
+    // Sample first 500 nodes for hash fullness estimate
+    for (int i = 0; i < 500; i++) {
+        used += ((table + i)->slot1.ageNodeType >> 2) == age;
+        used += ((table + i)->slot2.ageNodeType >> 2) == age;
+    }
+    return used;
 }
