@@ -200,7 +200,7 @@ void setKingSafetyScale(int s) {
 template <bool debug>
 int Eval::evaluate(Board &b) {
 
-    int endgameScore = checkEndgameCases(b);
+    int endgameScore = checkEndgameCases();
     if (endgameScore != -INFTY) {
         return endgameScore;
     }
