@@ -214,8 +214,15 @@ int Eval::evaluate(Board &b) {
 
     if (pieceCount > 10) {
         int score = network.evaluate(b);
-        return b.getPlayerToMove() == WHITE ? score : -score;
-    } else{
+
+        if (b.getPlayerToMove() == WHITE) {
+            std::cout << "White's turn. Score: " << score << std::endl;
+            return score;
+        } else {
+            std::cout << "Black's turn. Raw Score: " << score << ", Negated Score: " << -score << std::endl;
+            return -score;
+        }
+    }else{
 
     int material[2][2] = {{0, 0}, {0, 0}};
     int egFactorMaterial = 0;
