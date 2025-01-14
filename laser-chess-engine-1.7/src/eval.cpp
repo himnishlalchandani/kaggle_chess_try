@@ -1069,7 +1069,7 @@ int Eval::evaluate(Board &b) {
 
     return totalEval;
 }
-}
+
 
 // Explicitly instantiate templates
 template int Eval::evaluate<true>(Board &b);
