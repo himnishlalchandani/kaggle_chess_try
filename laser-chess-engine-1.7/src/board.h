@@ -84,6 +84,10 @@ public:
     ~Board();
     Board staticCopy() const;
 
+    int playerToMove() const {
+        return this->playerToMove;
+    }
+
     void doMove(Move m, int color);
     bool doPseudoLegalMove(Move m, int color);
     bool doHashMove(Move m, int color);
