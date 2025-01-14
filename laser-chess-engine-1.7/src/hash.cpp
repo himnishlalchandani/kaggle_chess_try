@@ -20,7 +20,7 @@
 #include "hash.h"
 
 Hash::Hash(uint64_t MB) {
-    init(1);
+    init(MB);
 }
 
 Hash::~Hash() {
@@ -78,23 +78,11 @@ uint64_t Hash::getSize() const {
 
 void Hash::setSize(uint64_t MB) {
     free(table);
-5 days ago
-
-Update hash.cpp
     init(MB);
-5 days ago
-
-Add files via upload
 }
 
 void Hash::init(uint64_t MB) {
-5 days ago
-
-Update hash.cpp
     uint64_t newMB = MB;
-5 days ago
-
-Add files via upload
     // Convert to bytes
     uint64_t bytes = newMB << 20;
     // Calculate how many array slots we can use
@@ -124,3 +112,6 @@ int Hash::estimateHashfull() const {
     for (int i = 0; i < 500; i++) {
         used += ((table + i)->slot1.ageNodeType >> 2) == age;
         used += ((table + i)->slot2.ageNodeType >> 2) == age;
+    }
+    return used;
+}
