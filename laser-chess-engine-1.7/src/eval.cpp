@@ -208,10 +208,10 @@ int Eval::evaluate(Board &b) {
     // }
 
     // return network.evaluate(b);
-    uint64_t allPieces = b.getPieces(WHITE, QUEEN) | b.getPieces(BLACK, QUEEN) | 
-                        b.getPieces(WHITE, ROOK) | b.getPieces(BLACK, ROOK) |
-                        b.getPieces(WHITE, BISHOP) | b.getPieces(BLACK, BISHOP) |
-                        b.getPieces(WHITE, KNIGHT) | b.getPieces(BLACK, KNIGHT);
+    uint64_t allPieces = b.getPieces(WHITE, QUEENS) | b.getPieces(BLACK, QUEENS) | 
+                        b.getPieces(WHITE, ROOKS) | b.getPieces(BLACK, ROOKS) |
+                        b.getPieces(WHITE, BISHOPS) | b.getPieces(BLACK, BISHOPS) |
+                        b.getPieces(WHITE, KNIGHTS) | b.getPieces(BLACK, KNIGHTS);
     
     int pieceCount = __builtin_popcountll(allPieces);
 
