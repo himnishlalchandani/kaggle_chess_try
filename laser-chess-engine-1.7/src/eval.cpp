@@ -214,7 +214,7 @@ int Eval::evaluate(Board &b) {
 
     if (pieceCount > 10) {
         int score = network.evaluate(b);
-        return b.playerToMove() == WHITE ? score : -score;
+        return b.sideToMove() == WHITE ? score : -score;
     } else{
 
     int material[2][2] = {{0, 0}, {0, 0}};
