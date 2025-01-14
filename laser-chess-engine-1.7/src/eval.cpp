@@ -208,6 +208,18 @@ int Eval::evaluate(Board &b) {
     // }
 
     // return network.evaluate(b);
+    uint64_t allPieces = b.getPieces(WHITE, QUEEN) | b.getPieces(BLACK, QUEEN) | 
+                        b.getPieces(WHITE, ROOK) | b.getPieces(BLACK, ROOK) |
+                        b.getPieces(WHITE, BISHOP) | b.getPieces(BLACK, BISHOP) |
+                        b.getPieces(WHITE, KNIGHT) | b.getPieces(BLACK, KNIGHT);
+    
+    int pieceCount = __builtin_popcountll(allPieces);
+
+    if (pieceCount > 10) {
+        int score = network.evaluate(b);
+        return b.sideToMove() == WHITE ? score : -score;
+    }
+    else{
     
     int material[2][2] = {{0, 0}, {0, 0}};
     int egFactorMaterial = 0;
@@ -1053,6 +1065,7 @@ int Eval::evaluate(Board &b) {
     }
 
     return totalEval;
+}
 }
 
 // Explicitly instantiate templates
