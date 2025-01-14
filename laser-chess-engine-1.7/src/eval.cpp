@@ -199,6 +199,24 @@ void setKingSafetyScale(int s) {
  */
 template <bool debug>
 int Eval::evaluate(Board &b) {
+
+    int endgameScore = checkEndgameCases(b);
+    if (endgameScore != -INFTY) {
+        return endgameScore;
+    }
+
+    uint64_t piecenum = b.getPieces(WHITE, QUEENS) | b.getPieces(BLACK, QUEENS) | 
+                    b.getPieces(WHITE, ROOKS) | b.getPieces(BLACK, ROOKS) |
+                    b.getPieces(WHITE, BISHOPS) | b.getPieces(BLACK, BISHOPS) |
+                    b.getPieces(WHITE, KNIGHTS) | b.getPieces(BLACK, KNIGHTS);
+    
+    int pieceCount = __builtin_popcountll(piecenum);
+
+    if (pieceCount > 10) {
+        int score = network.evaluate(b);
+        return b.sideToMove() == WHITE ? score : -score;
+    } else{
+
     int material[2][2] = {{0, 0}, {0, 0}};
     int egFactorMaterial = 0;
     // Copy necessary values from Board and precompute the number of each piece on the board as well as material totals
@@ -1043,6 +1061,7 @@ int Eval::evaluate(Board &b) {
     }
 
     return totalEval;
+}
 }
 
 // Explicitly instantiate templates
