@@ -22,9 +22,9 @@
 #include <cstdint>
 #include <string>
 
-constexpr uint64_t DEFAULT_HASH_SIZE = 4;
+constexpr uint64_t DEFAULT_HASH_SIZE = 1;
 constexpr uint64_t MIN_HASH_SIZE = 1;
-constexpr uint64_t MAX_HASH_SIZE = 4.5 * 1024 * 1024;
+constexpr uint64_t MAX_HASH_SIZE = 1 * 1024 * 1024;
 constexpr int DEFAULT_MULTI_PV = 1;
 constexpr int MIN_MULTI_PV = 1;
 constexpr int MAX_MULTI_PV = 256;
