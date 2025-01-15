@@ -20,7 +20,7 @@
 #include "hash.h"
 
 Hash::Hash(uint64_t MB) {
-    init(1);
+    init(MB);
 }
 
 Hash::~Hash() {
