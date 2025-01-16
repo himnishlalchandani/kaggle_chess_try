@@ -286,7 +286,7 @@ void print_3(char *name, TVector params, int i, int A, int B, int C, char *S);
                                                                             \
     COMMENTS(F, "/* Pawn Evaluation Terms */\n\n");                         \
     ENABLE_2(F, PawnCandidatePasser, 2, 8, NORMAL, "[2][RANK_NB]");         \
-    ENABLE_1(F, PawnIsolated, 8, NORMAL, "[FILE_NB]");                      \
+    ENABLE_1(F, PawnIsolated, 8, NORMAL, "[FILE_NB]"); NEWLINE(F);          \
     ENABLE_2(F, PawnStacked, 2, 8, NORMAL, "[2][FILE_NB]");                 \
     ENABLE_2(F, PawnBackwards, 2, 8, NORMAL, "[2][RANK_NB]");               \
     ENABLE_1(F, PawnConnected32, 32, NORMAL, "[32]");                       \
