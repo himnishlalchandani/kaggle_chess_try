@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 
     // Initialize core components of Ethereal
     initAttacks(); initMasks(); initEval();
-    initSearch(); initZobrist(); initTT(16);
+    initSearch(); initZobrist(); initTT(1);
     threads = createThreadPool(1);
     boardFromFEN(&board, StartPosition, chess960);
 
