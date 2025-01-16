@@ -27,8 +27,8 @@ enum {
 };
 
 enum {
-    PK_CACHE_KEY_SIZE   = 16,
-    PK_CACHE_MASK       = 0xFFFF,
+    PK_CACHE_KEY_SIZE   = 14,
+    PK_CACHE_MASK       = 0x3FFF,
     PK_CACHE_SIZE       = 1 << PK_CACHE_KEY_SIZE,
 };
 
