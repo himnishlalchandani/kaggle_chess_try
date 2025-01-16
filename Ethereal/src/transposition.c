@@ -38,7 +38,7 @@ void initTT(uint64_t megabytes) {
 
     // Use a default keysize of 16 bits, which should be equal to
     // the smallest possible hash table size, which is 2 megabytes
-    assert((1ull << 16ull) * sizeof(TTBucket) == 2 * MB);
+    assert((1ull << 16ull) * sizeof(TTBucket) == 1 * MB);
     uint64_t keySize = 16ull;
 
     // Find the largest keysize that is still within our given megabytes
@@ -47,7 +47,7 @@ void initTT(uint64_t megabytes) {
 
 #if defined(__linux__) && !defined(__ANDROID__)
     // On Linux systems we align on 2MB boundaries and request Huge Pages
-    Table.buckets = aligned_alloc(2 * MB, (1ull << keySize) * sizeof(TTBucket));
+    Table.buckets = aligned_alloc(4096, (1ull << keySize) * sizeof(TTBucket));
     madvise(Table.buckets, (1ull << keySize) * sizeof(TTBucket), MADV_HUGEPAGE);
 #else
     // Otherwise, we simply allocate as usual and make no requests
